@@ -2,7 +2,7 @@ body {
   background-color: rgb(82, 82, 82);
   color: #ffffff;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-size: 16px;
+  font-size: 20px;
 }
 h1 {
   font-size: 30pt;
@@ -23,13 +23,20 @@ h1 {
   border: solid gainsboro 4px;
   min-width: 60%;
   width: auto;
+  font-size: 30px;
+}
+#startButton{
+  font-size: 36px;
+  width: 20%;
 }
 
 .numberInput {
-  width: 32px;
+  font-size: 30px;
+  width: 50px;
 }
 .dropdownInput{
-  width: min-content;
+  font-size: 30px;
+  height: 41px;
 }
 .buttonHolder{
   margin-top: 20px;
