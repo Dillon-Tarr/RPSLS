@@ -1,0 +1,36 @@
+body {
+  background-color: rgb(82, 82, 82);
+  color: #ffffff;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+h1 {
+  font-size: 30pt;
+  text-align: center;
+}
+#matchups {
+  float: left;
+  margin: 12px;
+  padding: 12px;
+  border: ridge 12px rgb(7, 166, 206);
+  width: 280px;
+  font-size: 17px;
+}
+
+.gesture {
+  font-weight: bold;
+}
+.rock {
+  color: darkgoldenrod;
+}
+.paper {
+  color: rgb(221, 205, 205);
+}
+.scissors {
+  color: rgb(197, 208, 218);
+}
+.lizard {
+  color: #57c536;
+}
+.spock {
+  color: #fdff80;
+}
