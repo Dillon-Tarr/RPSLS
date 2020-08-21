@@ -3,29 +3,10 @@
   <head>
     <meta charset="utf-8">
     <title>RPSLS</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="noStyle.css">
   </head>
-  <body onload="theGame.mainMenu()">
-    <h1><span class="gesture rock">Rock</span>, <span class="gesture paper">Paper</span>, <span class="gesture scissors">Scissors</span>... <span class="gesture lizard">Lizard</span>, <span class="gesture spock">Spock</span>!</h1>
-    <hr>
-    <div>
-      <p id="matchups">The matchups:<br>
-        <br>Matching gestures tie.
-        <br><span class="gesture rock">Rock</span> crushes <span class="gesture scissors">Scissors</span>.
-        <br><span class="gesture scissors">Scissors</span> cuts <span class="gesture paper">Paper</span>.
-        <br><span class="gesture paper">Paper</span> covers <span class="gesture rock">Rock</span>.
-        <br><span class="gesture rock">Rock</span> crushes <span class="gesture lizard">Lizard</span>.
-        <br><span class="gesture lizard">Lizard</span> poisons <span class="gesture spock">Spock</span>.
-        <br><span class="gesture spock">Spock</span> smashes <span class="gesture scissors">Scissors</span>.
-        <br><span class="gesture scissors">Scissors</span> decapitates <span class="gesture lizard">Lizard</span>.
-        <br><span class="gesture lizard">Lizard</span> eats <span class="gesture paper">Paper</span>.
-        <br><span class="gesture paper">Paper</span> disproves <span class="gesture spock">Spock</span>.
-        <br><span class="gesture spock">Spock</span> vaporizes <span class="gesture rock">Rock</span>.
-      </p>
-
-    </div>
-    <div id="interactiveWindow">
-    </div>
+  <body style="text-align: center;">
+    <button onclick="theGame.playGame()" style="font-size: 80px;">Play</button>
   </body>
   <script type="text/javascript" src="app.js"></script>
 </html>
