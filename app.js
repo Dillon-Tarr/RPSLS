@@ -13,16 +13,57 @@ class Player {
 class Human extends Player {
   constructor(name){
     super(name);
-  }
-  chooseGesture(){
-    this.chosenGesture = this.gestureArray[parseInt(prompt(`${this.name}, enter the number next to the gesture you want to choose.
+    this.validateName();
+    this.gesturePromptText = `${this.name}, enter the number next to the gesture you want to choose.
 1 - Rock
 2 - Paper
 3 - Scissors
 4 - Lizard
 5 - Spock
 
-else - quit`)) - 1];
+else - quit`;
+    this.gestureIsValid = false;
+  }
+
+  validateName(){
+    if (this.name === ''){
+      this.name = prompt('Surely you must have a name. What is it?');
+    }
+    if (this.name === null || this.name === undefined || this.name === ''){
+      throw('Nameless person quit.');
+    }
+  }
+
+  chooseGesture(){
+    this.chosenGesture = this.gestureArray[parseInt(prompt(this.gesturePromptText)) - 1];
+  }
+
+  validateGesture(){
+    if (this.gestureIsValid){
+      return;
+    }
+    while (!(this.gestureIsValid)){
+      switch(this.chosenGesture){
+        case 'Rock':
+        case 'Paper':
+        case 'Scissors':
+        case 'Lizard':
+        case 'Spock':
+          this.gestureIsValid = true;
+          break;
+        default:
+          this.chooseGestureAgain();
+          break;
+      }
+    }
+  }
+    
+  chooseGestureAgain(){
+    this.chosenGesture = this.gestureArray[parseInt(prompt(`Your selection was not valid.
+${this.gesturePromptText}`)) - 1];
+    if (this.chosenGesture === null || this.chosenGesture === undefined || this.chosenGesture === ''){
+      throw(`${this.name} quit.`);
+    };
   }
 }
 
@@ -63,7 +104,12 @@ class Game{
   }
 
   playGame() {
-    this.againstWhom = prompt("Would you like to play single-player or multi-player?\n\nEnter '1' for single-player or '2' to play with a friend.");
+    while(this.againstWhom !== '1' && this.againstWhom !== '2') {
+      this.againstWhom = prompt("Would you like to play single-player or multi-player?\n\nEnter '1' for single-player or '2' to play with a friend.");
+      if (this.againstWhom === null || this.againstWhom === undefined || this.againstWhom === ''){
+        throw('User did not want to play.');
+      }
+    }
     this.createPlayers();
 
     this.bestOf = parseInt(prompt("What is the maximum number of rounds you want to play to determine the winner?\nThat is, \"best of\" how many games?\n\nEnter an odd number - at least '3'"));
@@ -79,13 +125,9 @@ First to ${this.pointsToWin} points wins!`);
 
     while(this.player1.points < this.pointsToWin && this.player2.points < this.pointsToWin){
       this.player1.chooseGesture();
-      if (this.player1.chosenGesture == undefined){
-        throw(`${this.player1.name} quit.`);
-      }
+      this.player1.validateGesture();
       this.player2.chooseGesture();
-      if (this.player2.chosenGesture == undefined){
-        throw(`${this.player2.name} quit.`);
-      }
+      this.player2.validateGesture();
       this.determineRoundWinner();
       this.announceRoundWinner();
     }
