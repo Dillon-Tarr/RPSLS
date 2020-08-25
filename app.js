@@ -21,8 +21,9 @@ class Human extends Player {
 4 - Lizard
 5 - Spock
 
-else - quit`;
-    this.gestureIsValid = false;
+enter nothing = quit`;
+    this.gestureIsValid;
+    this.gestureInput;
   }
 
   validateName(){
@@ -35,35 +36,37 @@ else - quit`;
   }
 
   chooseGesture(){
-    this.chosenGesture = this.gestureArray[parseInt(prompt(this.gesturePromptText)) - 1];
+    this.gestureIsValid = false;
+    this.gestureInput = prompt(this.gesturePromptText);
+    this.validateGestureInput();
+    this.chosenGesture = this.gestureArray[parseInt(this.gestureInput) - 1];
   }
 
-  validateGesture(){
-    if (this.gestureIsValid){
-      return;
-    }
-    while (!(this.gestureIsValid)){
-      switch(this.chosenGesture){
-        case 'Rock':
-        case 'Paper':
-        case 'Scissors':
-        case 'Lizard':
-        case 'Spock':
-          this.gestureIsValid = true;
-          break;
-        default:
-          this.chooseGestureAgain();
-          break;
+  validateGestureInput(){
+    do {
+      switch(this.gestureInput){
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+        this.gestureIsValid = true;
+        break;
+      default:
+        this.chooseGestureAgain();
+        break;
       }
     }
+    while (!(this.gestureIsValid))
   }
     
   chooseGestureAgain(){
-    this.chosenGesture = this.gestureArray[parseInt(prompt(`Your selection was not valid.
-${this.gesturePromptText}`)) - 1];
-    if (this.chosenGesture === null || this.chosenGesture === undefined || this.chosenGesture === ''){
+    this.gestureInput = prompt(`Your selection was not valid.
+
+${this.gesturePromptText}`);
+    if (this.gestureInput === null || this.gestureInput === undefined || this.gestureInput === ''){
       throw(`${this.name} quit.`);
-    };
+    }
   }
 }
 
@@ -84,7 +87,7 @@ class Game{
     this.bestOf = null;
     this.pointsToWin = null;
     this.destructivePhrase = null;
-    this.destructivePhrases = ['Rock bounces off of Rock.',
+    this.destructivePhrases = ['Rock leaves a slight scratch on Rock.',
       'Paper gets stuck to Paper.',
       'Scissors permanently interlocks with Scissors.',
       'Lizard stares down Lizard.',
@@ -104,37 +107,30 @@ class Game{
   }
 
   playGame() {
-    while(this.againstWhom !== '1' && this.againstWhom !== '2') {
+    this.determineAgainstWhom();
+    this.createPlayers();
+    this.determineBestOf();
+    this.announceStartOfGame();
+    do {
+      this.player1.chooseGesture();
+      this.player2.chooseGesture();
+      this.determineRoundWinner();
+      this.announceRoundWinner();
+    } while (this.player1.points < this.pointsToWin && this.player2.points < this.pointsToWin); // this.pointsToWin is established in this.determineBestOf()
+    this.determineGameWinner();
+    this.announceGameWinner();
+  }
+  
+  determineAgainstWhom(){
+    do {
       this.againstWhom = prompt("Would you like to play single-player or multi-player?\n\nEnter '1' for single-player or '2' to play with a friend.");
       if (this.againstWhom === null || this.againstWhom === undefined || this.againstWhom === ''){
         throw('User did not want to play.');
       }
     }
-    this.createPlayers();
-
-    this.bestOf = parseInt(prompt("What is the maximum number of rounds you want to play to determine the winner?\nThat is, \"best of\" how many games?\n\nEnter an odd number - at least '3'"));
-    if (this.bestOf % 2 == 0) {
-      this.bestOf--;
-    }
-    this.pointsToWin = this.bestOf / 2 + 0.5;
-
-    alert(`${this.player1.name} challenges ${this.player2.name} to a best-of-${this.bestOf} game of...
-Rock, Paper, Scissors, Lizard, Spock!
-    
-First to ${this.pointsToWin} points wins!`);
-
-    while(this.player1.points < this.pointsToWin && this.player2.points < this.pointsToWin){
-      this.player1.chooseGesture();
-      this.player1.validateGesture();
-      this.player2.chooseGesture();
-      this.player2.validateGesture();
-      this.determineRoundWinner();
-      this.announceRoundWinner();
-    }
-    this.determineGameWinner();
-    this.announceGameWinner();
+    while (this.againstWhom !== '1' && this.againstWhom !== '2');
   }
-  
+
   createPlayers(){
     if (this.againstWhom === '1'){
       this.player1 = new Human(prompt("What is your name?"));
@@ -144,6 +140,28 @@ First to ${this.pointsToWin} points wins!`);
       this.player1 = new Human(prompt("What is player 1's name?"));
       this.player2 = new Human(prompt("What is player 2's name?"));
     }
+  }
+
+  determineBestOf(){
+    do {
+      this.bestOf = prompt(`What is the maximum number of rounds you want to play to determine the winner?
+That is, "best of" how many games?
+
+Enter an ODD number - at least '3'`);
+      if (this.bestOf === null || this.bestOf === undefined || this.bestOf === ''){
+        throw('User did not want to play.');
+      }
+      this.bestOf = parseInt(this.bestOf);
+    }
+    while (!(((this.bestOf + 1) % 2 === 0) && (this.bestOf >= 3)));
+    this.pointsToWin = this.bestOf / 2 + 0.5;
+  }
+
+  announceStartOfGame(){
+    alert(`${this.player1.name} challenges ${this.player2.name} to a best-of-${this.bestOf} game of...
+Rock, Paper, Scissors, Lizard, Spock!
+
+First to ${this.pointsToWin} points wins!`);
   }
 
   determineRoundWinner(){
@@ -370,5 +388,3 @@ ${this.player2.name} has ${this.player2.points} point${this.player2.s}.${gamePoi
 }
 
 let theGame = new Game();
-
-
