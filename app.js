@@ -1,5 +1,7 @@
 "use strict";
 
+let interactiveContent = document.getElementById("interactiveWindow");
+
 class Player {
   constructor(name = "Player"){
     this.name = name;
@@ -97,288 +99,323 @@ class Game{
       'Lizard eats Paper.',
       'Paper disproves Spock.',
       'Spock vaporizes Rock.'];
-    this.roundWinner = null;
-    this.gameWinner = null;
+      this.roundWinner = null;
+      this.gameWinner = null;
+      this.interactiveContent = document.getElementById("interactiveWindow");
+  }
+
+  setMainMenu(){
+    interactiveContent.innerHTML =
+    `<form id="form" name="form">
+    I want to play best of
+    <label for="bestOf"><input id="bestOf" name="bestOf" type="number" class="numberInput" value="3" min="3" step="2" max="99"></label> against 
+    <label for="againstWhom"><select id="againstWhom" name="againstWhom" class="dropdownInput">
+      <option value="computer">the computer</option>
+      <option value="human">the person next to me</option>
+    </select></label>.<br>
+    <div class="buttonHolder"><label for="start"><input id="startButton" type="submit" name="start" value="Start!"></label></div>
+  </form>`;
+    let form = document.getElementById("form");
+    form.onsubmit = function(e) {
+      e.preventDefault();
+      theGame.bestOf = form.bestOf.value;
+      theGame.pointsToWin = theGame.bestOf / 2 + 0.5;
+      theGame.againstWhom = form.againstWhom.value;
+      theGame.playGame();
+    }
   }
 
   playGame() {
-    this.determineAgainstWhom();
-    this.createPlayers();
-    this.determineBestOf();
-    this.announceStartOfGame();
+    theGame.createPlayers();
+    theGame.announceStartOfGame();
     do {
-      this.player1.chooseGesture();
-      this.player2.chooseGesture();
-      this.determineRoundWinner();
-      this.announceRoundWinner();
-    } while (this.player1.points < this.pointsToWin && this.player2.points < this.pointsToWin); // this.pointsToWin is established in this.determineBestOf()
-    this.determineGameWinner();
-    this.announceGameWinner();
+      theGame.player1.chooseGesture();
+      theGame.player2.chooseGesture();
+      theGame.determineRoundWinner();
+      theGame.announceRoundWinner();
+    } while (theGame.player1.points < theGame.pointsToWin && theGame.player2.points < theGame.pointsToWin); // theGame.pointsToWin is established in theGame.determineBestOf()
+    theGame.determineGameWinner();
+    theGame.announceGameWinner();
   }
   
   determineAgainstWhom(){
     do {
-      this.againstWhom = prompt("Would you like to play single-player or multi-player?\n\nEnter '1' for single-player or '2' to play with a friend.");
-      if (this.againstWhom === null || this.againstWhom === undefined || this.againstWhom === ''){
+      theGame.againstWhom = prompt("Would you like to play single-player or multi-player?\n\nEnter '1' for single-player or '2' to play with a friend.");
+      if (theGame.againstWhom === null || theGame.againstWhom === undefined || theGame.againstWhom === ''){
         throw('User did not want to play.');
       }
     }
-    while (this.againstWhom !== '1' && this.againstWhom !== '2');
+    while (theGame.againstWhom !== '1' && theGame.againstWhom !== '2');
   }
 
   createPlayers(){
-    if (this.againstWhom === '1'){
-      this.player1 = new Human(prompt("What is your name?"));
-      this.player2 = new Computer("Computer");
+    if (theGame.againstWhom === 'computer'){
+      theGame.whatIsYourName('your');
+      theGame.player1 = new Human(prompt("What is your name?"));
+      theGame.player2 = new Computer("Computer");
     }
-    else if (this.againstWhom === "2"){
-      this.player1 = new Human(prompt("What is player 1's name?"));
-      this.player2 = new Human(prompt("What is player 2's name?"));
+    else if (theGame.againstWhom === "human"){
+      theGame.player1 = new Human(prompt("What is player 1's name?"));
+      theGame.player2 = new Human(prompt("What is player 2's name?"));
+    }
+  }
+
+  whatIsYourName(unnamedPlayersName){
+    interactiveContent.innerHTML =
+    `<form id="form" name="form">
+    What is ${unnamedPlayersName} name? <label for="playerName"><input type="text" name="playerName"></label>
+    <div class="buttonHolder"><label for="start"><input id="startButton" type="submit" name="start" value="Start!"></label></div>
+  </form>`;
+    let form = document.getElementById("form");
+    form.onsubmit = function(e) {
+      e.preventDefault();
+      theGame.playerName = form.playerName.value;
+      theGame.playGame();
     }
   }
 
   determineBestOf(){
     do {
-      this.bestOf = prompt(`What is the maximum number of rounds you want to play to determine the winner?
+      theGame.bestOf = prompt(`What is the maximum number of rounds you want to play to determine the winner?
 That is, "best of" how many games?
 
 Enter an ODD number - at least '3'`);
-      if (this.bestOf === null || this.bestOf === undefined || this.bestOf === ''){
+      if (theGame.bestOf === null || theGame.bestOf === undefined || theGame.bestOf === ''){
         throw('User did not want to play.');
       }
-      this.bestOf = parseInt(this.bestOf);
+      theGame.bestOf = parseInt(theGame.bestOf);
     }
-    while (!(((this.bestOf + 1) % 2 === 0) && (this.bestOf >= 3)));
-    this.pointsToWin = this.bestOf / 2 + 0.5;
+    while (!(((theGame.bestOf + 1) % 2 === 0) && (theGame.bestOf >= 3)));
+    theGame.pointsToWin = theGame.bestOf / 2 + 0.5;
   }
 
   announceStartOfGame(){
-    alert(`${this.player1.name} challenges ${this.player2.name} to a best-of-${this.bestOf} game of...
+    alert(`${theGame.player1.name} challenges ${theGame.player2.name} to a best-of-${theGame.bestOf} game of...
 Rock, Paper, Scissors, Lizard, Spock!
 
-First to ${this.pointsToWin} points wins!`);
+First to ${theGame.pointsToWin} points wins!`);
   }
 
   determineRoundWinner(){
-    switch(this.player1.chosenGesture){
+    switch(theGame.player1.chosenGesture){
       case "Rock":
-        switch(this.player2.chosenGesture){
+        switch(theGame.player2.chosenGesture){
           case "Rock":
-            this.setDestructivePhrase(0);
-            this.roundWinner = 'No one.';
+            theGame.setDestructivePhrase(0);
+            theGame.roundWinner = 'No one.';
             break;
           case "Paper":
-            this.setDestructivePhrase(7);
-            this.player2.points++;
-            this.roundWinner = `${this.player2.name}`;
+            theGame.setDestructivePhrase(7);
+            theGame.player2.points++;
+            theGame.roundWinner = `${theGame.player2.name}`;
             break;
           case "Scissors":
-            this.setDestructivePhrase(5);
-            this.player1.points++;
-            this.roundWinner = `${this.player1.name}`;
+            theGame.setDestructivePhrase(5);
+            theGame.player1.points++;
+            theGame.roundWinner = `${theGame.player1.name}`;
             break;
           case "Lizard":
-            this.setDestructivePhrase(8);
-            this.player1.points++;
-            this.roundWinner = `${this.player1.name}`;
+            theGame.setDestructivePhrase(8);
+            theGame.player1.points++;
+            theGame.roundWinner = `${theGame.player1.name}`;
             break;
           case "Spock":
-            this.setDestructivePhrase(14);
-            this.player2.points++;
-            this.roundWinner = `${this.player2.name}`;
+            theGame.setDestructivePhrase(14);
+            theGame.player2.points++;
+            theGame.roundWinner = `${theGame.player2.name}`;
             break;
           default:
-            this.roundWinner = 'ERROR!!!';
+            theGame.roundWinner = 'ERROR!!!';
             break;
         }
         break;
       case "Paper":
-        switch(this.player2.chosenGesture){
+        switch(theGame.player2.chosenGesture){
           case "Rock":
-            this.setDestructivePhrase(7);
-            this.player1.points++;
-            this.roundWinner = `${this.player1.name}`;
+            theGame.setDestructivePhrase(7);
+            theGame.player1.points++;
+            theGame.roundWinner = `${theGame.player1.name}`;
             break;
           case "Paper":
-            this.setDestructivePhrase(1);
-            this.roundWinner = 'No one.';
+            theGame.setDestructivePhrase(1);
+            theGame.roundWinner = 'No one.';
             break;
           case "Scissors":
-            this.setDestructivePhrase(6);
-            this.player2.points++;
-            this.roundWinner = `${this.player2.name}`;
+            theGame.setDestructivePhrase(6);
+            theGame.player2.points++;
+            theGame.roundWinner = `${theGame.player2.name}`;
             break;
           case "Lizard":
-            this.setDestructivePhrase(12);
-            this.player2.points++;
-            this.roundWinner = `${this.player2.name}`;
+            theGame.setDestructivePhrase(12);
+            theGame.player2.points++;
+            theGame.roundWinner = `${theGame.player2.name}`;
             break;
           case "Spock":
-            this.setDestructivePhrase(13);
-            this.player1.points++;
-            this.roundWinner = `${this.player1.name}`;
+            theGame.setDestructivePhrase(13);
+            theGame.player1.points++;
+            theGame.roundWinner = `${theGame.player1.name}`;
             break;
           default:
-            this.roundWinner = 'ERROR!!!';
+            theGame.roundWinner = 'ERROR!!!';
             break;
         }
         break;
       case "Scissors":
-        switch(this.player2.chosenGesture){
+        switch(theGame.player2.chosenGesture){
           case "Rock":
-            this.setDestructivePhrase(5);
-            this.player2.points++;
-            this.roundWinner = `${this.player2.name}`;
+            theGame.setDestructivePhrase(5);
+            theGame.player2.points++;
+            theGame.roundWinner = `${theGame.player2.name}`;
             break;
           case "Paper":
-            this.setDestructivePhrase(6);
-            this.player1.points++;
-            this.roundWinner = `${this.player1.name}`;
+            theGame.setDestructivePhrase(6);
+            theGame.player1.points++;
+            theGame.roundWinner = `${theGame.player1.name}`;
             break;
           case "Scissors":
-            this.setDestructivePhrase(2);
-            this.roundWinner = 'No one.';
+            theGame.setDestructivePhrase(2);
+            theGame.roundWinner = 'No one.';
             break;
           case "Lizard":
-            this.setDestructivePhrase(11);
-            this.player1.points++;
-            this.roundWinner = `${this.player1.name}`;
+            theGame.setDestructivePhrase(11);
+            theGame.player1.points++;
+            theGame.roundWinner = `${theGame.player1.name}`;
             break;
           case "Spock":
-            this.setDestructivePhrase(10);
-            this.player2.points++;
-            this.roundWinner = `${this.player2.name}`;
+            theGame.setDestructivePhrase(10);
+            theGame.player2.points++;
+            theGame.roundWinner = `${theGame.player2.name}`;
             break;
           default:
-            this.roundWinner = 'ERROR!!!';
+            theGame.roundWinner = 'ERROR!!!';
             break;
         }
         break;
       case "Lizard":
-        switch(this.player2.chosenGesture){
+        switch(theGame.player2.chosenGesture){
           case "Rock":
-            this.setDestructivePhrase(8);
-            this.player2.points++;
-            this.roundWinner = `${this.player2.name}`;
+            theGame.setDestructivePhrase(8);
+            theGame.player2.points++;
+            theGame.roundWinner = `${theGame.player2.name}`;
             break;
           case "Paper":
-            this.setDestructivePhrase(12);
-            this.player1.points++;
-            this.roundWinner = `${this.player1.name}`;
+            theGame.setDestructivePhrase(12);
+            theGame.player1.points++;
+            theGame.roundWinner = `${theGame.player1.name}`;
             break;
           case "Scissors":
-            this.setDestructivePhrase(11);
-            this.player2.points++;
-            this.roundWinner = `${this.player2.name}`;
+            theGame.setDestructivePhrase(11);
+            theGame.player2.points++;
+            theGame.roundWinner = `${theGame.player2.name}`;
             break;
           case "Lizard":
-            this.setDestructivePhrase(3);
-            this.roundWinner = 'No one.';
+            theGame.setDestructivePhrase(3);
+            theGame.roundWinner = 'No one.';
             break;
           case "Spock":
-            this.setDestructivePhrase(9);
-            this.player1.points++;
-            this.roundWinner = `${this.player1.name}`;
+            theGame.setDestructivePhrase(9);
+            theGame.player1.points++;
+            theGame.roundWinner = `${theGame.player1.name}`;
             break;
           default:
-            this.roundWinner = 'ERROR!!!';
+            theGame.roundWinner = 'ERROR!!!';
             break;
         }
         break;
       case "Spock":
-        switch(this.player2.chosenGesture){
+        switch(theGame.player2.chosenGesture){
           case "Rock":
-            this.setDestructivePhrase(14);
-            this.player1.points++;
-            this.roundWinner = `${this.player1.name}`;
+            theGame.setDestructivePhrase(14);
+            theGame.player1.points++;
+            theGame.roundWinner = `${theGame.player1.name}`;
             break;
           case "Paper":
-            this.setDestructivePhrase(13);
-            this.player2.points++;
-            this.roundWinner = `${this.player2.name}`;
+            theGame.setDestructivePhrase(13);
+            theGame.player2.points++;
+            theGame.roundWinner = `${theGame.player2.name}`;
             break;
           case "Scissors":
-            this.setDestructivePhrase(10);
-            this.player1.points++;
-            this.roundWinner = `${this.player1.name}`;
+            theGame.setDestructivePhrase(10);
+            theGame.player1.points++;
+            theGame.roundWinner = `${theGame.player1.name}`;
             break;
           case "Lizard":
-            this.setDestructivePhrase(9);
-            this.player2.points++;
-            this.roundWinner = `${this.player2.name}`;
+            theGame.setDestructivePhrase(9);
+            theGame.player2.points++;
+            theGame.roundWinner = `${theGame.player2.name}`;
             break;
           case "Spock":
-            this.setDestructivePhrase(4);
-            this.roundWinner = 'No one.';
+            theGame.setDestructivePhrase(4);
+            theGame.roundWinner = 'No one.';
             break;
           default:
-            this.roundWinner = 'ERROR!!!';
+            theGame.roundWinner = 'ERROR!!!';
             break;
         }
         break;
       default:
-        this.roundWinner = 'ERROR!!!';
+        theGame.roundWinner = 'ERROR!!!';
         break;
     }
   }
 
   setDestructivePhrase(index){
-    this.destructivePhrase = this.destructivePhrases[index];
+    theGame.destructivePhrase = theGame.destructivePhrases[index];
   }
 
   announceRoundWinner(){
     let gamePointText = "";
-    if(this.player1.points === this.pointsToWin || this.player2.points === this.pointsToWin){
+    if(theGame.player1.points === theGame.pointsToWin || theGame.player2.points === theGame.pointsToWin){
       gamePointText = "\nIt is decided.";
     }
-    else if (this.player1.points === this.pointsToWin - 1 && this.player2.points === this.pointsToWin - 1){
+    else if (theGame.player1.points === theGame.pointsToWin - 1 && theGame.player2.points === theGame.pointsToWin - 1){
       gamePointText = "\nLast point! It could go either way!";
     }
-    else if (this.player1.points === this.pointsToWin - 1){
-      gamePointText = `\nThis could be the last one! Can ${this.player2.name} catch up?`;
+    else if (theGame.player1.points === theGame.pointsToWin - 1){
+      gamePointText = `\nThis could be the last one! Can ${theGame.player2.name} catch up?`;
     }
-    else if (this.player2.points === this.pointsToWin - 1){
-      gamePointText = `\nThis could be the last one! Can ${this.player1.name} catch up?`;
+    else if (theGame.player2.points === theGame.pointsToWin - 1){
+      gamePointText = `\nThis could be the last one! Can ${theGame.player1.name} catch up?`;
     }
-    this.determineSs();
-    alert(`${this.player1.name} chose ${this.player1.chosenGesture}. ${this.player2.name} chose ${this.player2.chosenGesture}.
-${this.destructivePhrase}
-This round's winner is: ${this.roundWinner}
+    theGame.determineSs();
+    alert(`${theGame.player1.name} chose ${theGame.player1.chosenGesture}. ${theGame.player2.name} chose ${theGame.player2.chosenGesture}.
+${theGame.destructivePhrase}
+This round's winner is: ${theGame.roundWinner}
 
-Points needed to win: ${this.pointsToWin}
+Points needed to win: ${theGame.pointsToWin}
 
-${this.player1.name} has ${this.player1.points} point${this.player1.s}.
-${this.player2.name} has ${this.player2.points} point${this.player2.s}.${gamePointText}`);
+${theGame.player1.name} has ${theGame.player1.points} point${theGame.player1.s}.
+${theGame.player2.name} has ${theGame.player2.points} point${theGame.player2.s}.${gamePointText}`);
   }
 
   determineSs(){
-    if(this.player1.points < 3 || this.player2.points < 3){
-      if (this.player1.points === 1){
-        this.player1.s = '';
+    if(theGame.player1.points < 3 || theGame.player2.points < 3){
+      if (theGame.player1.points === 1){
+        theGame.player1.s = '';
       }
       else {
-        this.player1.s = 's';
+        theGame.player1.s = 's';
       }
-      if (this.player2.points === 1){
-        this.player2.s = '';
+      if (theGame.player2.points === 1){
+        theGame.player2.s = '';
       }
       else {
-        this.player2.s = 's';
+        theGame.player2.s = 's';
       }
     }
   }
 
   determineGameWinner(){
-    if(this.player1.points === this.pointsToWin){
-    this.gameWinner = this.player1.name;
+    if(theGame.player1.points === theGame.pointsToWin){
+    theGame.gameWinner = theGame.player1.name;
     }
-    else if(this.player2.points === this.pointsToWin){
-    this.gameWinner = this.player2.name;
+    else if(theGame.player2.points === theGame.pointsToWin){
+    theGame.gameWinner = theGame.player2.name;
     }
   }
 
   announceGameWinner(){
-    alert(`This game's winner is... ${this.gameWinner}!`)
+    alert(`This game's winner is... ${theGame.gameWinner}!`)
   }
 }
 
