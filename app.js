@@ -15,13 +15,14 @@ class Human extends Player {
     super(name);
     this.validateName();
     this.gesturePromptText = `${this.name}, enter the number next to the gesture you want to choose.
+
 1 - Rock
 2 - Paper
 3 - Scissors
 4 - Lizard
 5 - Spock
 
-enter nothing = quit`;
+q - quit`;
     this.gestureIsValid;
     this.gestureInput;
   }
@@ -43,8 +44,7 @@ enter nothing = quit`;
   }
 
   validateGestureInput(){
-    do {
-      switch(this.gestureInput){
+    switch(this.gestureInput){
       case '1':
       case '2':
       case '3':
@@ -52,20 +52,15 @@ enter nothing = quit`;
       case '5':
         this.gestureIsValid = true;
         break;
+      case 'q':
+      case 'Q':
+      case 'quit':
+      case 'Quit':
+        throw(`${this.name} quit.`);
       default:
-        this.chooseGestureAgain();
+        alert('Your selection was not valid.');
+        this.chooseGesture();
         break;
-      }
-    }
-    while (!(this.gestureIsValid))
-  }
-    
-  chooseGestureAgain(){
-    this.gestureInput = prompt(`Your selection was not valid.
-
-${this.gesturePromptText}`);
-    if (this.gestureInput === null || this.gestureInput === undefined || this.gestureInput === ''){
-      throw(`${this.name} quit.`);
     }
   }
 }
