@@ -15,7 +15,6 @@ class Player {
 class Human extends Player {
   constructor(name){
     super(name);
-    this.validateName();
     this.gesturePromptText = `${this.name}, enter the number next to the gesture you want to choose.
 
 1 - Rock
@@ -27,15 +26,6 @@ class Human extends Player {
 q - quit`;
     this.gestureIsValid;
     this.gestureInput;
-  }
-
-  validateName(){
-    if (this.name === ''){
-      this.name = prompt('Surely you must have a name. What is it?');
-    }
-    if (this.name === null || this.name === undefined || this.name === ''){
-      throw('Nameless person quit.');
-    }
   }
 
   chooseGesture(){
@@ -121,13 +111,73 @@ class Game{
       theGame.bestOf = form.bestOf.value;
       theGame.pointsToWin = theGame.bestOf / 2 + 0.5;
       theGame.againstWhom = form.againstWhom.value;
-      theGame.playGame();
+      return theGame.createPlayer1();
+    }
+  }
+  
+  createPlayer1(){
+    if (theGame.againstWhom === 'computer'){
+      var unnamedPlayersName = 'your';
+    }
+    else if (theGame.againstWhom === 'human'){
+      var unnamedPlayersName = "Player 1's";
+    }
+    interactiveContent.innerHTML =
+    `<form id="form" name="form">
+    What is ${unnamedPlayersName} name? <label for="playerName"><input type="text" maxlength="36" placeholder="your name goes here" name="playerName"></label>
+    <div class="buttonHolder"><label for="start"><input id="startButton" type="submit" name="start" value="That there is my name!"></label></div>
+  </form>`;
+    let form = document.getElementById("form");
+    form.onsubmit = function(e) {
+      e.preventDefault();
+      if (form.playerName.value.length < 1){
+        return theGame.createPlayer1();
+      }
+      theGame.player1 = new Human(form.playerName.value);
+      return theGame.createPlayer2();
     }
   }
 
-  playGame() {
-    theGame.createPlayers();
-    theGame.announceStartOfGame();
+  createPlayer2(){
+    if (theGame.againstWhom === 'computer'){
+      theGame.player2 = new Computer("Computer");
+      theGame.announceStartOfGame();
+    }
+    else if (theGame.againstWhom === 'human'){
+
+      interactiveContent.innerHTML =
+      `<form id="form" name="form">
+      What is Player 2's name? <label for="playerName"><input type="text" maxlength="36" placeholder="your name goes here" name="playerName"></label>
+      <div class="buttonHolder"><label for="start"><input id="startButton" type="submit" name="start" value="That there is my name!"></label></div>
+    </form>`;
+      let form = document.getElementById("form");
+      form.onsubmit = function(e) {
+        e.preventDefault();
+        if (form.playerName.value.length < 1){
+          return theGame.createPlayer2();
+        }
+        theGame.player2 = new Human(form.playerName.value);
+        return theGame.announceStartOfGame();
+      }
+    }
+  }
+
+  announceStartOfGame(){
+    interactiveContent.innerHTML =
+    `<form id="form" name="form">
+    ${theGame.player1.name} challenges ${theGame.player2.name} to a best-of-${theGame.bestOf} game of...<br>
+    Rock, Paper, Scissors, Lizard, Spock!<br><br>
+    First to ${theGame.pointsToWin} points wins!<br>
+    <div class="buttonHolder"><label for="start"><input id="startButton" type="submit" name="start" value="Okay, okay... I want to play now!"></label></div>
+    </form>`
+    let form = document.getElementById("form");
+    form.onsubmit = function(e) {
+      e.preventDefault();
+      return theGame.playGame();
+    }
+  }
+
+  playGame(){
     do {
       theGame.player1.chooseGesture();
       theGame.player2.chooseGesture();
@@ -136,64 +186,6 @@ class Game{
     } while (theGame.player1.points < theGame.pointsToWin && theGame.player2.points < theGame.pointsToWin); // theGame.pointsToWin is established in theGame.determineBestOf()
     theGame.determineGameWinner();
     theGame.announceGameWinner();
-  }
-  
-  determineAgainstWhom(){
-    do {
-      theGame.againstWhom = prompt("Would you like to play single-player or multi-player?\n\nEnter '1' for single-player or '2' to play with a friend.");
-      if (theGame.againstWhom === null || theGame.againstWhom === undefined || theGame.againstWhom === ''){
-        throw('User did not want to play.');
-      }
-    }
-    while (theGame.againstWhom !== '1' && theGame.againstWhom !== '2');
-  }
-
-  createPlayers(){
-    if (theGame.againstWhom === 'computer'){
-      theGame.whatIsYourName('your');
-      theGame.player1 = new Human(prompt("What is your name?"));
-      theGame.player2 = new Computer("Computer");
-    }
-    else if (theGame.againstWhom === "human"){
-      theGame.player1 = new Human(prompt("What is player 1's name?"));
-      theGame.player2 = new Human(prompt("What is player 2's name?"));
-    }
-  }
-
-  whatIsYourName(unnamedPlayersName){
-    interactiveContent.innerHTML =
-    `<form id="form" name="form">
-    What is ${unnamedPlayersName} name? <label for="playerName"><input type="text" name="playerName"></label>
-    <div class="buttonHolder"><label for="start"><input id="startButton" type="submit" name="start" value="Start!"></label></div>
-  </form>`;
-    let form = document.getElementById("form");
-    form.onsubmit = function(e) {
-      e.preventDefault();
-      theGame.playerName = form.playerName.value;
-      theGame.playGame();
-    }
-  }
-
-  determineBestOf(){
-    do {
-      theGame.bestOf = prompt(`What is the maximum number of rounds you want to play to determine the winner?
-That is, "best of" how many games?
-
-Enter an ODD number - at least '3'`);
-      if (theGame.bestOf === null || theGame.bestOf === undefined || theGame.bestOf === ''){
-        throw('User did not want to play.');
-      }
-      theGame.bestOf = parseInt(theGame.bestOf);
-    }
-    while (!(((theGame.bestOf + 1) % 2 === 0) && (theGame.bestOf >= 3)));
-    theGame.pointsToWin = theGame.bestOf / 2 + 0.5;
-  }
-
-  announceStartOfGame(){
-    alert(`${theGame.player1.name} challenges ${theGame.player2.name} to a best-of-${theGame.bestOf} game of...
-Rock, Paper, Scissors, Lizard, Spock!
-
-First to ${theGame.pointsToWin} points wins!`);
   }
 
   determineRoundWinner(){
@@ -415,7 +407,8 @@ ${theGame.player2.name} has ${theGame.player2.points} point${theGame.player2.s}.
   }
 
   announceGameWinner(){
-    alert(`This game's winner is... ${theGame.gameWinner}!`)
+    alert(`This game's winner is... ${theGame.gameWinner}!`);
+    return theGame.setMainMenu();
   }
 }
 

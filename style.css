@@ -27,7 +27,7 @@ h1 {
 }
 #startButton{
   font-size: 36px;
-  width: 20%;
+  min-width: 20%;
 }
 
 .numberInput {
@@ -42,20 +42,23 @@ h1 {
   margin-top: 20px;
   text-align: center;
 }
+.nameInput{
+  font-size: 30x;
+}
 .gesture {
   font-weight: normal;
 }
 .rock {
-  color: darkgoldenrod;
+  color: rgb(255, 191, 28);
 }
 .paper {
-  color: rgb(221, 205, 205);
+  color: rgb(205, 206, 255);
 }
 .scissors {
-  color: rgb(197, 208, 218);
+  color: rgb(144, 201, 255);
 }
 .lizard {
-  color: #57c536;
+  color: #79d45d;
 }
 .spock {
   color: #fdff80;
